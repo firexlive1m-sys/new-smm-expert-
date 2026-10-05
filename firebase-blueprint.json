@@ -1,0 +1,136 @@
+{
+  "entities": {
+    "categories": {
+      "title": "Category",
+      "description": "Social media platform categories such as Instagram, YouTube, Facebook, TikTok, etc.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "icon": { "type": "string" },
+        "description": { "type": "string" },
+        "active": { "type": "boolean" },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["id", "name", "slug", "active", "sortOrder"]
+    },
+    "services": {
+      "title": "Service",
+      "description": "Engagement service types belonging to a category (e.g. Followers, Likes, Views, Comments)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "categoryName": { "type": "string" },
+        "name": { "type": "string" },
+        "slug": { "type": "string" },
+        "description": { "type": "string" },
+        "urlLabel": { "type": "string" },
+        "urlPlaceholder": { "type": "string" },
+        "active": { "type": "boolean" },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["id", "categoryId", "name", "active", "sortOrder"]
+    },
+    "plans": {
+      "title": "Plan",
+      "description": "Specific pricing and quantity plans under a service",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "categoryName": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceName": { "type": "string" },
+        "quantity": { "type": "number" },
+        "quantityLabel": { "type": "string" },
+        "price": { "type": "number" },
+        "comparePrice": { "type": "number" },
+        "discountPercent": { "type": "number" },
+        "guaranteeText": { "type": "string" },
+        "deliveryTime": { "type": "string" },
+        "badge": { "type": "string" },
+        "badgeColor": { "type": "string" },
+        "sortOrder": { "type": "number" },
+        "active": { "type": "boolean" },
+        "featured": { "type": "boolean" },
+        "providerServiceId": { "type": "string" }
+      },
+      "required": ["id", "categoryId", "serviceId", "quantity", "price", "active", "sortOrder"]
+    },
+    "orders": {
+      "title": "Order",
+      "description": "Customer purchase orders",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "orderId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "categoryId": { "type": "string" },
+        "categoryName": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceName": { "type": "string" },
+        "planId": { "type": "string" },
+        "quantity": { "type": "number" },
+        "targetUrl": { "type": "string" },
+        "amount": { "type": "number" },
+        "currency": { "type": "string" },
+        "paymentStatus": { "type": "string" },
+        "orderStatus": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "adminNote": { "type": "string" },
+        "completionNote": { "type": "string" },
+        "providerOrderId": { "type": "string" },
+        "providerStatus": { "type": "string" },
+        "providerCharge": { "type": "string" },
+        "providerStartCount": { "type": "string" },
+        "providerRemains": { "type": "string" },
+        "providerError": { "type": "string" },
+        "providerLastSyncAt": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "orderId", "customerName", "mobileNumber", "amount", "targetUrl", "orderStatus"]
+    },
+    "supportTickets": {
+      "title": "SupportTicket",
+      "description": "Customer support inquiries",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "ticketId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "mobileNumber": { "type": "string" },
+        "orderId": { "type": "string" },
+        "problem": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string" },
+        "adminReply": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["id", "ticketId", "customerName", "mobileNumber", "problem", "message", "status"]
+    },
+    "banners": {
+      "title": "Banner",
+      "description": "Hero section promotional banners",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "subtitle": { "type": "string" },
+        "badgeText": { "type": "string" },
+        "discountBadge": { "type": "string" },
+        "buttonText": { "type": "string" },
+        "buttonLink": { "type": "string" },
+        "imageUrl": { "type": "string" },
+        "active": { "type": "boolean" },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["id", "title", "subtitle", "active", "sortOrder"]
+    }
+  }
+}

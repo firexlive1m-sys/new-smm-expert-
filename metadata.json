@@ -1,0 +1,6 @@
+{
+  "name": "swiftSMM - Social Growth Panel",
+  "description": "Mobile-first SMM Panel for real and instant social media growth. Instagram, YouTube, Facebook, TikTok followers, likes, views and more.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
