@@ -30,7 +30,8 @@
         "urlLabel": { "type": "string" },
         "urlPlaceholder": { "type": "string" },
         "active": { "type": "boolean" },
-        "sortOrder": { "type": "number" }
+        "sortOrder": { "type": "number" },
+        "providerServiceId": { "type": "string" }
       },
       "required": ["id", "categoryId", "name", "active", "sortOrder"]
     },

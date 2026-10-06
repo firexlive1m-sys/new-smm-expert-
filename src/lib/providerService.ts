@@ -1,4 +1,4 @@
-import { Order, Plan, WebsiteSettings } from '../types';
+import { Order, Plan, Service, WebsiteSettings } from '../types';
 import { dbService } from './db';
 
 const DEFAULT_API_URL = 'https://smmxpert.in/api/v2';
@@ -92,7 +92,8 @@ export async function fetchProviderServices(
 export async function dispatchOrderToProvider(
   order: Order,
   plan?: Plan | null,
-  settings?: WebsiteSettings
+  settings?: WebsiteSettings,
+  service?: Service | null
 ): Promise<ProviderOrderResult> {
   const targetSettings = settings || (await dbService.getSettings());
   const apiUrl = targetSettings.providerApiUrl || DEFAULT_API_URL;
@@ -110,19 +111,42 @@ export async function dispatchOrderToProvider(
   }
 
   // Determine provider service ID:
-  // 1. From passed plan object
-  // 2. Or query from dbService plans using order.planId
+  // 1. Plan override (if specifically set on plan)
+  // 2. Passed service object
+  // 3. Or query Service from dbService using order.serviceId
+  // 4. Or query Plan from dbService using order.planId
   let serviceId = plan?.providerServiceId?.trim();
+
+  if (!serviceId && service?.providerServiceId?.trim()) {
+    serviceId = service.providerServiceId.trim();
+  }
+
+  // If not found yet, check Service in DB first
+  if (!serviceId && order.serviceId) {
+    try {
+      const allServices = await dbService.getServices(undefined, false);
+      const matchedService = allServices.find(
+        (s) => s.id === order.serviceId || s.name.toLowerCase() === order.serviceName?.toLowerCase()
+      );
+      if (matchedService?.providerServiceId?.trim()) {
+        serviceId = matchedService.providerServiceId.trim();
+      }
+    } catch {}
+  }
+
+  // Fallback: check Plan in DB
   if (!serviceId && order.planId) {
-    const allPlans = await dbService.getPlans(undefined, false);
-    const matched = allPlans.find((p) => p.id === order.planId);
-    if (matched?.providerServiceId?.trim()) {
-      serviceId = matched.providerServiceId.trim();
-    }
+    try {
+      const allPlans = await dbService.getPlans(undefined, false);
+      const matched = allPlans.find((p) => p.id === order.planId);
+      if (matched?.providerServiceId?.trim()) {
+        serviceId = matched.providerServiceId.trim();
+      }
+    } catch {}
   }
 
   if (!serviceId) {
-    const errorMsg = 'No Provider Service ID is linked to this Plan in Admin > Plans';
+    const errorMsg = 'No Provider Service ID is linked to this Service or Plan in Admin > Services / Plans';
     await dbService.updateOrder(order.id, {
       providerError: errorMsg,
       adminNote: order.adminNote

@@ -20,6 +20,7 @@ export interface Service {
   sortOrder: number;
   urlPlaceholder?: string;
   urlLabel?: string;
+  providerServiceId?: string; // SMM Provider Service ID (e.g. from smmxpert.in) applied to all plans in this service
 }
 
 export interface Plan {

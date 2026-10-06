@@ -294,11 +294,28 @@ export const AdminPlans: React.FC<AdminPlansProps> = ({ settings }) => {
                     <td className="py-3 px-4">
                       <span className="font-bold text-white">{plan.categoryName}</span>
                       <span className="text-slate-400 block text-[10px]">{plan.serviceName}</span>
-                      {plan.providerServiceId && (
+                      {plan.providerServiceId ? (
                         <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-950/80 border border-purple-800 text-purple-300">
                           <Zap className="w-2.5 h-2.5 text-purple-400" />
-                          API #{plan.providerServiceId}
+                          API #{plan.providerServiceId} (Custom)
                         </span>
+                      ) : (
+                        (() => {
+                          const parentSrv = services.find((s) => s.id === plan.serviceId);
+                          if (parentSrv?.providerServiceId) {
+                            return (
+                              <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-indigo-950/70 border border-indigo-800 text-indigo-300">
+                                <Zap className="w-2.5 h-2.5 text-indigo-400" />
+                                API #{parentSrv.providerServiceId} (via Service)
+                              </span>
+                            );
+                          }
+                          return (
+                            <span className="inline-block mt-1 text-[9px] text-slate-500 italic">
+                              No API ID
+                            </span>
+                          );
+                        })()
                       )}
                     </td>
                     <td className="py-3 px-4">
@@ -738,27 +755,58 @@ export const AdminPlans: React.FC<AdminPlansProps> = ({ settings }) => {
               </div>
 
               {/* SMM Provider Service ID Mapping */}
-              <div className="p-3.5 rounded-2xl bg-purple-950/20 border border-purple-800/40 space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    <Zap className="w-4 h-4 text-purple-400" />
-                    <span className="text-xs font-bold text-white">SMM Provider Service ID (Optional)</span>
+              {(() => {
+                const parentSrv = services.find((s) => s.id === srvId);
+                return (
+                  <div className="p-3.5 rounded-2xl bg-purple-950/20 border border-purple-800/40 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <Zap className="w-4 h-4 text-purple-400" />
+                        <span className="text-xs font-bold text-white">SMM Provider Service ID</span>
+                      </div>
+                      <span className="text-[10px] text-purple-300 font-bold bg-purple-900/60 px-2 py-0.5 rounded-md">
+                        Auto-Fulfill
+                      </span>
+                    </div>
+
+                    {parentSrv?.providerServiceId ? (
+                      <div className="p-2.5 rounded-xl bg-indigo-950/60 border border-indigo-800/80 text-[11px] text-indigo-200 flex items-center justify-between">
+                        <div>
+                          <span className="font-bold">Inherited from Service ({parentSrv.name}):</span>
+                          <span className="font-mono ml-1.5 font-black text-indigo-300 bg-indigo-900/70 px-2 py-0.5 rounded">
+                            API #{parentSrv.providerServiceId}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-emerald-400 font-bold">✓ Active for this plan</span>
+                      </div>
+                    ) : (
+                      <div className="p-2 rounded-xl bg-slate-800/60 border border-slate-700/60 text-[10px] text-amber-300/90">
+                        ⚠️ Service "{parentSrv?.name || 'Selected'}" par Provider ID set nahi hai. Aap Admin &gt; Services mein jaakar set karein ya neeche custom override dalein.
+                      </div>
+                    )}
+
+                    <div>
+                      <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                        Custom Plan Override (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        value={providerServiceId}
+                        onChange={(e) => setProviderServiceId(e.target.value)}
+                        placeholder={
+                          parentSrv?.providerServiceId
+                            ? `Khali chhod dein (Auto-uses #${parentSrv.providerServiceId}) ya alag ID dalein`
+                            : 'e.g. 1542 (smmxpert.in ID)'
+                        }
+                        className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-purple-500 placeholder:text-slate-500"
+                      />
+                      <p className="text-[10px] text-slate-400 mt-1">
+                        Agar Service mein ID set hai, toh yahan kuch daalne ki zaroorat nahi hai (automatic lag jayegi).
+                      </p>
+                    </div>
                   </div>
-                  <span className="text-[10px] text-purple-300 font-bold bg-purple-900/60 px-2 py-0.5 rounded-md">
-                    Auto-Order
-                  </span>
-                </div>
-                <input
-                  type="text"
-                  value={providerServiceId}
-                  onChange={(e) => setProviderServiceId(e.target.value)}
-                  placeholder="e.g. 1542"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs font-mono focus:outline-none focus:border-purple-500"
-                />
-                <p className="text-[10px] text-slate-400">
-                  Enter Service ID from smmxpert.in (e.g. 1, 1542). When a customer buys this plan, it will be automatically placed with this ID.
-                </p>
-              </div>
+                );
+              })()}
 
               <div className="pt-3 border-t border-slate-800 flex items-center justify-end gap-2">
                 <button

@@ -368,7 +368,7 @@ export function App() {
 
       // Auto-fulfill order via SMM Provider if configured
       if (settings?.providerAutoOrder && settings?.providerApiKey) {
-        dispatchOrderToProvider(order, selectedPlan, settings).catch((err) =>
+        dispatchOrderToProvider(order, selectedPlan, settings, selectedService).catch((err) =>
           console.warn('Auto-fulfill in-app order failed:', err)
         );
       }

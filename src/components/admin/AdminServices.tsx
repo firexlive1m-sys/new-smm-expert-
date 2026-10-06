@@ -34,6 +34,7 @@ export const AdminServices: React.FC = () => {
   const [urlPlaceholder, setUrlPlaceholder] = useState('');
   const [sortOrder, setSortOrder] = useState(1);
   const [active, setActive] = useState(true);
+  const [providerServiceId, setProviderServiceId] = useState('');
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -74,6 +75,7 @@ export const AdminServices: React.FC = () => {
     setUrlPlaceholder('');
     setSortOrder(services.length + 1);
     setActive(true);
+    setProviderServiceId('');
     setModalOpen(true);
   };
 
@@ -87,6 +89,7 @@ export const AdminServices: React.FC = () => {
     setUrlPlaceholder(srv.urlPlaceholder || '');
     setSortOrder(srv.sortOrder);
     setActive(srv.active);
+    setProviderServiceId(srv.providerServiceId || '');
     setModalOpen(true);
   };
 
@@ -142,6 +145,7 @@ export const AdminServices: React.FC = () => {
         urlPlaceholder: urlPlaceholder.trim() || undefined,
         sortOrder: Number(sortOrder) || 1,
         active,
+        providerServiceId: providerServiceId.trim() || undefined,
       };
 
       await dbService.saveService(newSrv);
@@ -232,6 +236,7 @@ export const AdminServices: React.FC = () => {
                 <tr>
                   <th className="py-3 px-4">Platform</th>
                   <th className="py-3 px-4">Service Name</th>
+                  <th className="py-3 px-4">Provider API ID</th>
                   <th className="py-3 px-4">Target Link Label</th>
                   <th className="py-3 px-4">Order</th>
                   <th className="py-3 px-4">Status</th>
@@ -250,6 +255,16 @@ export const AdminServices: React.FC = () => {
                       </span>
                       {srv.description && (
                         <p className="text-[10px] text-slate-400 mt-0.5">{srv.description}</p>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 whitespace-nowrap">
+                      {srv.providerServiceId ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-950/80 border border-purple-700/70 text-purple-300 font-mono text-[11px] font-bold shadow-xs">
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse"></span>
+                          API #{srv.providerServiceId}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-slate-500 italic">Not set (Manual)</span>
                       )}
                     </td>
                     <td className="py-3 px-4 text-slate-300 whitespace-nowrap">
@@ -402,6 +417,28 @@ export const AdminServices: React.FC = () => {
                   className="w-full px-3 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-white text-xs font-bold focus:outline-none focus:border-[#F72585]"
                   required
                 />
+              </div>
+
+              {/* SMM Provider Service ID (Applies to all plans under this service) */}
+              <div className="p-3 bg-purple-950/40 border border-purple-800/60 rounded-2xl space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-purple-200">
+                    SMM Provider Service ID (smmxpert.in)
+                  </label>
+                  <span className="text-[10px] bg-purple-900/80 text-purple-300 px-2 py-0.5 rounded-full font-bold">
+                    Auto-Applies to All Plans
+                  </span>
+                </div>
+                <input
+                  type="text"
+                  value={providerServiceId}
+                  onChange={(e) => setProviderServiceId(e.target.value)}
+                  placeholder="e.g. 1542, 301, 89 (from smmxpert services list)"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-purple-700/60 text-white text-xs font-mono font-bold focus:outline-none focus:border-purple-400 placeholder:text-slate-500"
+                />
+                <p className="text-[10px] text-slate-400 leading-relaxed">
+                  💡 <strong>Tip:</strong> Is service mein jo ID yahan daalenge, wo iske sabhi plans (100, 500, 1K, 5K etc.) par automatically apply ho jayegi. Ek-ek plan mein alag se daalne ki zaroorat nahi hai!
+                </p>
               </div>
 
               <div>
