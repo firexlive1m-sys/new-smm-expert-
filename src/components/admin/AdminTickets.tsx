@@ -77,9 +77,9 @@ export const AdminTickets: React.FC = () => {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
         <div>
-          <h1 className="text-xl font-black text-white">Customer Support Tickets</h1>
+          <h1 className="text-xl font-black text-white">Support Tickets</h1>
           <p className="text-xs text-slate-400">
-            Inquiries raised by website buyers. (Partner program tickets are managed in Affiliates / Referrals ➔ Partner Tickets).
+            View inquiries, update statuses, and write customer responses.
           </p>
         </div>
 

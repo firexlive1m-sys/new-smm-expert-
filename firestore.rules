@@ -36,23 +36,6 @@ service cloud.firestore {
     match /supportTickets/{ticketId} {
       allow read, write: if true;
     }
-
-    // Partner & Referral Program collections
-    match /partners/{partnerId} {
-      allow read, write: if true;
-    }
-
-    match /partner_commissions/{commissionId} {
-      allow read, write: if true;
-    }
-
-    match /payout_requests/{payoutId} {
-      allow read, write: if true;
-    }
-
-    match /partner_tickets/{ticketId} {
-      allow read, write: if true;
-    }
   }
 }
 

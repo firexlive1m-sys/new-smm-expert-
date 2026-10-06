@@ -32,14 +32,12 @@ import { HowToOrderModal } from './components/HowToOrderModal';
 import { ExplorePlatformsModal } from './components/ExplorePlatformsModal';
 import { BottomNavigation } from './components/BottomNavigation';
 import { Footer } from './components/Footer';
-import { ReferralPortal } from './components/ReferralPortal';
 
 // Admin Components
 import { AdminLogin } from './components/admin/AdminLogin';
 import { AdminLayout } from './components/admin/AdminLayout';
 import { AdminDashboard } from './components/admin/AdminDashboard';
 import { AdminOrders } from './components/admin/AdminOrders';
-import { AdminAffiliates } from './components/admin/AdminAffiliates';
 import { AdminCategories } from './components/admin/AdminCategories';
 import { AdminServices } from './components/admin/AdminServices';
 import { AdminPlans } from './components/admin/AdminPlans';
@@ -47,7 +45,6 @@ import { AdminOffers } from './components/admin/AdminOffers';
 import { AdminBanners } from './components/admin/AdminBanners';
 import { AdminTickets } from './components/admin/AdminTickets';
 import { AdminSettings } from './components/admin/AdminSettings';
-import { captureReferralFromLocation, getActiveReferralCode } from './lib/referralTracker';
 
 export function App() {
   const checkIsAdminRoute = () => {
@@ -62,23 +59,9 @@ export function App() {
     );
   };
 
-  const checkIsReferralRoute = () => {
-    if (typeof window === 'undefined') return false;
-    const path = window.location.pathname.toLowerCase();
-    const hash = window.location.hash.toLowerCase();
-    return (
-      path === '/referral' ||
-      path.startsWith('/referral/') ||
-      hash === '#referral' ||
-      hash.startsWith('#referral')
-    );
-  };
-
-  // Navigation State: directly check /admin or /referral
-  const [currentView, setCurrentView] = useState<'home' | 'category' | 'order' | 'success' | 'orders' | 'services' | 'support' | 'admin' | 'referral'>(() => {
-    if (checkIsAdminRoute()) return 'admin';
-    if (checkIsReferralRoute()) return 'referral';
-    return 'home';
+  // Navigation State: directly check /admin or #admin
+  const [currentView, setCurrentView] = useState<'home' | 'category' | 'order' | 'success' | 'orders' | 'services' | 'support' | 'admin'>(() => {
+    return checkIsAdminRoute() ? 'admin' : 'home';
   });
 
   const [adminTab, setAdminTab] = useState('dashboard');
@@ -140,9 +123,6 @@ export function App() {
   };
 
   useEffect(() => {
-    // Capture any incoming referral code from active click URL
-    captureReferralFromLocation();
-
     loadDatabaseData();
     const unsubDb = dbService.subscribe(() => {
       loadDatabaseData();
@@ -151,13 +131,10 @@ export function App() {
       setIsAdminAuthed(auth);
     });
 
-    // Check location changes for /admin or /referral
+    // Check location changes for /admin or #admin
     const handleRouteChange = () => {
-      captureReferralFromLocation();
       if (checkIsAdminRoute()) {
         setCurrentView('admin');
-      } else if (checkIsReferralRoute()) {
-        setCurrentView('referral');
       }
     };
     window.addEventListener('hashchange', handleRouteChange);
@@ -355,7 +332,6 @@ export function App() {
     try {
       const cleanPhone = details.mobileNumber.replace(/[^0-9]/g, '').slice(-10);
       const cleanCustomerName = details.customerName.trim();
-      const activeRef = getActiveReferralCode();
 
       const order = await dbService.createOrder({
         customerName: cleanCustomerName,
@@ -378,15 +354,7 @@ export function App() {
         isCustomOffer: Boolean(selectedOffer),
         offerTitle: selectedOffer?.title || '',
         itemsSummary: selectedOffer?.itemsIncluded || '',
-        referralCode: activeRef || undefined,
       });
-
-      // Strictly credit referral commission ONLY upon successful paid purchase
-      if (activeRef) {
-        dbService.creditReferralCommission(order, settings).catch((err) =>
-          console.warn('Referral commission credit failed:', err)
-        );
-      }
 
       setConfirmedOrder(order);
       const customerInfo = {
@@ -458,7 +426,6 @@ export function App() {
           <AdminDashboard onNavigateTab={setAdminTab} settings={settings} />
         )}
         {adminTab === 'orders' && <AdminOrders settings={settings} />}
-        {adminTab === 'affiliates' && <AdminAffiliates settings={settings} />}
         {adminTab === 'categories' && <AdminCategories />}
         {adminTab === 'services' && <AdminServices />}
         {adminTab === 'plans' && <AdminPlans settings={settings} />}
@@ -587,21 +554,10 @@ export function App() {
             onOpenHowToOrder={() => setIsHowToOrderOpen(true)}
           />
         )}
-
-        {/* VIEW 7: PARTNER & REFERRAL PROGRAM PORTAL */}
-        {currentView === 'referral' && (
-          <ReferralPortal
-            settings={settings}
-            onNavigateHome={() => {
-              setCurrentView('home');
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-          />
-        )}
       </div>
 
       {/* Responsive Desktop & Tablet Footer */}
-      {currentView !== 'success' && currentView !== 'referral' && (
+      {currentView !== 'success' && (
         <Footer
           settings={settings}
           onNavigate={(v) => handleBottomNavigate(v)}
@@ -629,12 +585,10 @@ export function App() {
       />
 
       {/* Mobile-first Bottom Navigation (Always sticky on mobile) */}
-      {currentView !== 'referral' && (
-        <BottomNavigation
-          currentView={currentView}
-          onNavigate={handleBottomNavigate}
-        />
-      )}
+      <BottomNavigation
+        currentView={currentView}
+        onNavigate={handleBottomNavigate}
+      />
     </div>
   );
 }

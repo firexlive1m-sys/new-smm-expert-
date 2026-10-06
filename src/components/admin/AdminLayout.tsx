@@ -15,7 +15,6 @@ import {
   Menu,
   X,
   ListOrdered,
-  Users,
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -36,7 +35,6 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4" /> },
     { id: 'orders', label: 'Orders', icon: <ShoppingBag className="w-4 h-4" /> },
-    { id: 'affiliates', label: 'Affiliates / Referrals', icon: <Users className="w-4 h-4" /> },
     { id: 'categories', label: 'Categories', icon: <Layers className="w-4 h-4" /> },
     { id: 'services', label: 'Services', icon: <ListOrdered className="w-4 h-4" /> },
     { id: 'plans', label: 'Plans', icon: <Sparkles className="w-4 h-4" /> },

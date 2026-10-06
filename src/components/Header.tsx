@@ -11,7 +11,6 @@ import {
   PlayCircle,
   ShieldCheck,
   Lock,
-  Users,
 } from 'lucide-react';
 import { WebsiteSettings } from '../types';
 
@@ -142,21 +141,6 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             <button
-              onClick={() => handleNavClick('referral')}
-              className={`px-3.5 py-2 rounded-xl text-sm font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                currentView === 'referral'
-                  ? 'bg-pink-50 text-[#F72585]'
-                  : 'text-gray-600 hover:text-[#172033] hover:bg-slate-50'
-              }`}
-            >
-              <Users className="w-4 h-4 text-[#F72585]" />
-              <span className="flex items-center gap-1">
-                Partner Program
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-700 font-extrabold">30%</span>
-              </span>
-            </button>
-
-            <button
               onClick={() => {
                 if (onOpenSupport) onOpenSupport();
                 else handleNavClick('support');
@@ -259,23 +243,6 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <ShoppingBag className="w-4.5 h-4.5 text-[#F72585]" />
                 Track Orders
-              </button>
-
-              <button
-                onClick={() => handleNavClick('referral')}
-                className={`flex items-center justify-between px-3.5 py-3 rounded-xl text-sm font-bold transition-colors text-left ${
-                  currentView === 'referral'
-                    ? 'bg-pink-50 text-[#F72585]'
-                    : 'text-gray-700 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <Users className="w-4.5 h-4.5 text-[#F72585]" />
-                  <span>Partner Program</span>
-                </div>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-black">
-                  Earn 30%
-                </span>
               </button>
 
               <button
