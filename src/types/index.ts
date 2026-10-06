@@ -126,6 +126,11 @@ export interface Order {
   providerRemains?: string;
   providerError?: string;
   providerLastSyncAt?: string;
+  // Referral / Affiliate tracking
+  referralCode?: string;
+  referralPartnerId?: string;
+  referralCommission?: number;
+  referralCommissionStatus?: 'Credited' | 'Pending' | 'None';
 }
 
 export type TicketStatus = 'Open' | 'In Progress' | 'Resolved' | 'Closed';
@@ -171,4 +176,79 @@ export interface WebsiteSettings {
   providerAutoOrder?: boolean;
   providerBalance?: string;
   providerCurrency?: string;
+  // Referral / Affiliate Program Settings
+  referralEnabled?: boolean;
+  referralCommissionPercent?: number; // default 30
+  referralMinWithdrawal?: number; // default 200
+}
+
+export interface Partner {
+  id: string; // doc id
+  userId: string; // e.g. "PTR-4812"
+  name: string;
+  mobile: string;
+  password: string; // credentials for partner portal login
+  referralCode: string; // e.g. "SKY4812"
+  walletBalance: number; // current available for withdrawal
+  totalEarnings: number; // lifetime commission earned
+  totalWithdrawn: number; // total approved withdrawals
+  totalOrdersCount: number; // total successful paid orders referred
+  active: boolean;
+  createdAt: string;
+  updatedAt?: string;
+  lastLoginAt?: string;
+}
+
+export interface PartnerCommission {
+  id: string;
+  partnerId: string;
+  partnerUserId: string;
+  partnerName: string;
+  partnerMobile: string;
+  referralCode: string;
+  orderDocId: string;
+  orderId: string; // e.g. "#SWF81923"
+  categoryName: string;
+  serviceName: string;
+  quantityLabel?: string;
+  orderAmount: number;
+  commissionPercent: number; // default 30
+  commissionAmount: number; // e.g. 300
+  customerName?: string;
+  customerMobile?: string;
+  status: 'Credited' | 'Revoked';
+  createdAt: string;
+}
+
+export interface PayoutRequest {
+  id: string;
+  payoutId: string; // e.g. "#PAY-9812"
+  partnerId: string;
+  partnerUserId: string;
+  partnerName: string;
+  partnerMobile: string;
+  amount: number;
+  upiId: string; // e.g. "9876543210@paytm"
+  accountHolderName?: string;
+  status: 'Pending' | 'Paid' | 'Rejected';
+  adminNote?: string;
+  transactionRef?: string; // UTR or Reference number
+  createdAt: string;
+  processedAt?: string;
+}
+
+export interface PartnerTicket {
+  id: string;
+  ticketId: string; // e.g. "#PTK-8491"
+  partnerId: string;
+  partnerUserId: string;
+  partnerName: string;
+  partnerMobile: string;
+  referralCode?: string;
+  problem: string;
+  message: string;
+  status: TicketStatus;
+  adminReply?: string;
+  createdAt: string;
+  updatedAt: string;
 }

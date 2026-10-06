@@ -140,12 +140,24 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ settings }) => {
 
   const handleSaveOrder = async () => {
     if (!selectedOrder) return;
+    const wasUnpaid = selectedOrder.paymentStatus !== 'Paid';
+    const isNowPaid = editPaymentStatus === 'Paid';
+
     await dbService.updateOrder(selectedOrder.id, {
       orderStatus: editStatus,
       paymentStatus: editPaymentStatus,
       adminNote,
       completionNote,
     });
+
+    // If marked Paid and had a referralCode, credit commission if not already credited
+    if (wasUnpaid && isNowPaid && selectedOrder.referralCode && selectedOrder.referralCommissionStatus !== 'Credited') {
+      dbService.creditReferralCommission({
+        ...selectedOrder,
+        paymentStatus: 'Paid',
+      }, settings).catch((err) => console.warn('Referral credit on manual Paid failed:', err));
+    }
+
     setSelectedOrder(null);
     loadOrders();
   };
@@ -292,6 +304,12 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ settings }) => {
                         </div>
                       ) : (
                         <span className="text-[9px] text-slate-500 font-sans block mt-0.5">Manual</span>
+                      )}
+                      {order.referralCode && (
+                        <span className="inline-flex items-center gap-1 mt-1 text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-950/80 border border-emerald-800 text-emerald-300 font-bold block w-fit">
+                          Ref: {order.referralCode}
+                          {order.referralCommission ? ` (+₹${order.referralCommission})` : ''}
+                        </span>
                       )}
                     </td>
                     <td className="py-3 px-4 whitespace-nowrap">
@@ -487,7 +505,7 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ settings }) => {
 
             {/* Payment Details Badge */}
             {(selectedOrder.paymentMethod || selectedOrder.paymentId) && (
-              <div className="p-3 rounded-xl bg-slate-900 border border-slate-750 flex items-center justify-between text-xs">
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-755 flex items-center justify-between text-xs">
                 <div>
                   <span className="text-slate-400 block text-[10px] uppercase font-bold">
                     Gateway / Method
@@ -506,6 +524,28 @@ export const AdminOrders: React.FC<AdminOrdersProps> = ({ settings }) => {
                     </span>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Referral Attribution Badge */}
+            {selectedOrder.referralCode && (
+              <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-800/60 flex items-center justify-between text-xs">
+                <div>
+                  <span className="text-purple-300 block text-[10px] uppercase font-bold">
+                    Referral Partner Attribution
+                  </span>
+                  <span className="font-mono font-bold text-white">
+                    Code: {selectedOrder.referralCode}
+                  </span>
+                </div>
+                <div className="text-right">
+                  <span className="text-slate-400 block text-[10px] uppercase font-bold">
+                    Commission
+                  </span>
+                  <span className="font-mono font-black text-emerald-400">
+                    +{currency}{selectedOrder.referralCommission || Math.round(Number(selectedOrder.amount || 0) * 0.3)} ({selectedOrder.referralCommissionStatus || 'Credited'})
+                  </span>
+                </div>
               </div>
             )}
 
